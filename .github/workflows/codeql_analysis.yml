@@ -1,0 +1,43 @@
+name: "CodeQL Security Analysis"
+
+# Trigger the analysis on push or pull request events for main and develop branches
+on:
+  push:
+    branches: [ "main", "develop" ]
+  pull_request:
+    branches: [ "main", "develop" ]
+
+jobs:
+  analyze:
+    name: Analyze Code Security
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    steps:
+    # 1. Fetch the source code from the repository
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    # 2. Set up Java environment for the build process
+    - name: Set up JDK 21
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+
+    # 3. Initialize CodeQL engine for Java analysis
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v3
+      with:
+        languages: 'java'
+
+    # 4. Automatically build the Maven project
+    - name: Autobuild
+      uses: github/codeql-action/autobuild@v3
+
+    # 5. Execute the actual security scanning and upload results
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v3
